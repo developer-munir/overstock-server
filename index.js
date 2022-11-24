@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('overstock server is running');
+    res.send('overstock server is running on server');
 })
 app.listen(port, () => {
     console.log(`app running on port: ${port}`)
