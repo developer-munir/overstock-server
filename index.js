@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -16,6 +16,26 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+
+async function run() {
+  const userCollection = client.db('overstockDB').collection('users');
+  try {
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    })
+    app.get('/users', async(req,res)=>{
+      const query = {};
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    })
+  } 
+  finally {
+    
+  }
+}
+run().catch(error => console.log(error))
 
 app.get("/", (req, res) => {
   res.send("overstock server is running on server");
