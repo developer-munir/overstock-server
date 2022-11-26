@@ -46,7 +46,7 @@ async function run() {
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
-    app.get("/users", async (req, res) => {
+    app.get("/users",verifyJWT, async (req, res) => {
       const query = {};
       const result = await userCollection.find(query).toArray();
       res.send(result);
@@ -72,6 +72,12 @@ async function run() {
       const result = await bookingCollection.insertOne(bookings);
       res.send(result);
     });
+    app.get('/users/admin/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email:email};
+      const admin = await userCollection.findOne(query);
+      res.send({isAdmin: admin?.role === 'admin'})
+    })
     app.put('/users/admin/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
@@ -90,7 +96,7 @@ async function run() {
       const user = await userCollection.findOne(query);
       if (user) {
         const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, {
-          expiresIn: "1h",
+          expiresIn: "10h",
         });
         return res.send({ accessToken: token });
       }
