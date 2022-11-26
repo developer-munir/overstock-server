@@ -19,6 +19,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   const userCollection = client.db('overstockDB').collection('users');
+  const categoriesCollection = client.db('overstockDB').collection('categories');
+  const bookingCollection = client.db('overstockDB').collection('bookings');
   try {
     app.post('/users', async (req, res) => {
       const user = req.body;
@@ -28,6 +30,27 @@ async function run() {
     app.get('/users', async(req,res)=>{
       const query = {};
       const result = await userCollection.find(query).toArray();
+      res.send(result);
+    })
+    app.get('/categories', async (req, res) => {
+      const query = {};
+      const result = await categoriesCollection
+        .find(query)
+        .project({ category_name: 1, category_id:1,picture:1,details:1})
+        .limit(4)
+        .toArray();
+      res.send(result);
+    })
+    app.get("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { category_id: id};
+      const result = await categoriesCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.post('/bookings', async (req, res) => {
+      const bookings = req.body;
+      console.log(bookings)
+      const result = await bookingCollection.insertOne(bookings);
       res.send(result);
     })
   } 
