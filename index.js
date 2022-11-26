@@ -17,8 +17,6 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
- 
-
 const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -46,7 +44,7 @@ async function run() {
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
-    app.get("/users",verifyJWT, async (req, res) => {
+    app.get("/users", verifyJWT, async (req, res) => {
       const query = {};
       const result = await userCollection.find(query).toArray();
       res.send(result);
@@ -72,24 +70,24 @@ async function run() {
       const result = await bookingCollection.insertOne(bookings);
       res.send(result);
     });
-    app.get('/users/admin/:email', async (req, res) => {
+    app.get("/users/admin/:email", async (req, res) => {
       const email = req.params.email;
-      const query = { email:email};
-      const admin = await userCollection.findOne(query);
-      res.send({isAdmin: admin?.role === 'admin'})
-    })
-    app.put('/users/admin/:id', async (req, res) => {
+      const query = { email: email };
+      const result = await userCollection.findOne(query);
+      res.send({ isAdmin: result?.role === "admin" });
+    });
+    app.put("/users/admin/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          role:'admin'
-        }
-      }
+          role: "admin",
+        },
+      };
       const result = await userCollection.updateOne(filter, updateDoc, options);
       res.send(result);
-    })
+    });
     app.get("/jwt", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
