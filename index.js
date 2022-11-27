@@ -38,6 +38,9 @@ async function run() {
     .db("overstockDB")
     .collection("categories");
   const bookingCollection = client.db("overstockDB").collection("bookings");
+  const advertisedCollection = client
+    .db("overstockDB")
+    .collection("advertised");
   try {
     app.post("/users", async (req, res) => {
       const user = req.body;
@@ -72,14 +75,36 @@ async function run() {
     app.get("/products/myproducts/:username", async (req, res) => {
       const SellerName = req.params.username;
       const query = {
-        Seller_name: SellerName
+        Seller_name: SellerName,
       };
       const result = await categoriesCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.post("/products/advertise", async (req, res) => {
+      const items = req.body;
+      const result = await advertisedCollection.insertOne(items);
+      res.send(result);
+    });
+    app.get("/advertise", async (req, res) => {
+      const query = {};
+      const result = await advertisedCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.delete("/products/myproducts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await categoriesCollection.deleteOne(query);
       res.send(result);
     });
     app.post("/bookings", async (req, res) => {
       const bookings = req.body;
       const result = await bookingCollection.insertOne(bookings);
+      res.send(result);
+    });
+    app.get("/bookings/mybooking/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await bookingCollection.find(query).toArray();
       res.send(result);
     });
     app.get("/users/sellers", async (req, res) => {
@@ -120,6 +145,12 @@ async function run() {
         },
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+    app.delete("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
       res.send(result);
     });
     app.get("/jwt", async (req, res) => {
