@@ -58,15 +58,19 @@ async function run() {
         .toArray();
       res.send(result);
     });
-    app.get("/products/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { category_id: id };
+    app.post('/products', async (req, res) => {
+      const product = req.body;
+      const result = await categoriesCollection.insertOne(product);
+      res.send(result);
+    })
+    app.get('/products/category/:name',async (req, res) => {
+      const categoryName = req.params.name;
+      const query = { category_name: categoryName };
       const result = await categoriesCollection.find(query).toArray();
       res.send(result);
-    });
+    })
     app.post("/bookings", async (req, res) => {
       const bookings = req.body;
-      console.log(bookings);
       const result = await bookingCollection.insertOne(bookings);
       res.send(result);
     });
