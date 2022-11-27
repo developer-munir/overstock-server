@@ -58,32 +58,40 @@ async function run() {
         .toArray();
       res.send(result);
     });
-    app.post('/products', async (req, res) => {
+    app.post("/products", async (req, res) => {
       const product = req.body;
       const result = await categoriesCollection.insertOne(product);
       res.send(result);
-    })
-    app.get('/products/category/:name',async (req, res) => {
+    });
+    app.get("/products/category/:name", async (req, res) => {
       const categoryName = req.params.name;
       const query = { category_name: categoryName };
       const result = await categoriesCollection.find(query).toArray();
       res.send(result);
-    })
+    });
+    app.get("/products/myproducts/:username", async (req, res) => {
+      const SellerName = req.params.username;
+      const query = {
+        Seller_name: SellerName
+      };
+      const result = await categoriesCollection.find(query).toArray();
+      res.send(result);
+    });
     app.post("/bookings", async (req, res) => {
       const bookings = req.body;
       const result = await bookingCollection.insertOne(bookings);
       res.send(result);
     });
-    app.get('/users/sellers', async (req, res) => {
-      const query = {role:'seller'};
+    app.get("/users/sellers", async (req, res) => {
+      const query = { role: "seller" };
       const result = await userCollection.find(query).toArray();
       res.send(result);
-    })
-    app.get('/users/buyers', async (req, res) => {
-      const query = {role:'buyer'};
+    });
+    app.get("/users/buyers", async (req, res) => {
+      const query = { role: "buyer" };
       const result = await userCollection.find(query).toArray();
       res.send(result);
-    })
+    });
     app.get("/users/admin/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
