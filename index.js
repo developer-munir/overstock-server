@@ -70,11 +70,33 @@ async function run() {
       const result = await bookingCollection.insertOne(bookings);
       res.send(result);
     });
+    app.get('/users/sellers', async (req, res) => {
+      const query = {role:'seller'};
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    })
+    app.get('/users/buyers', async (req, res) => {
+      const query = {role:'buyer'};
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    })
     app.get("/users/admin/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
       const result = await userCollection.findOne(query);
       res.send({ isAdmin: result?.role === "admin" });
+    });
+    app.get("/users/seller/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await userCollection.findOne(query);
+      res.send({ isSeller: result?.role === "seller" });
+    });
+    app.get("/users/buyer/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await userCollection.findOne(query);
+      res.send({ isBuyer: result?.role === "buyer" });
     });
     app.put("/users/admin/:id", async (req, res) => {
       const id = req.params.id;
