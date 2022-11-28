@@ -41,6 +41,9 @@ async function run() {
   const advertisedCollection = client
     .db("overstockDB")
     .collection("advertised");
+  const wishListCollection = client
+    .db("wishlist")
+    .collection("advertised");
   try {
     app.post("/users", async (req, res) => {
       const user = req.body;
@@ -147,12 +150,43 @@ async function run() {
       const result = await userCollection.updateOne(filter, updateDoc, options);
       res.send(result);
     });
+    app.put("/users/verify/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          isVerifyed: "verifyed",
+        },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+    app.get("/user/verifyed/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
     app.delete("/user/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await userCollection.deleteOne(query);
       res.send(result);
     });
+    app.post("/wishlist", async (req, res) => {
+      const wishListData = req.body;
+      const result = await wishListCollection.insertOne(wishListData);
+      res.send(result);
+    });
+
+    app.get("/wishlist", async (req, res) => {
+      const email = req.query.email;
+      const query = { userEmail: email };
+      const result = await wishListCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.get("/jwt", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
